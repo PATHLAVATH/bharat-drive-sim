@@ -1,0 +1,14 @@
+# Photoreal sensor rig config (mirrors bharatsim/carla/sensors.py defaults).
+cameras:
+  layout: [{name: left, yaw: 60}, {name: front, yaw: 0}, {name: right, yaw: -60}]
+  width: 200
+  height: 120
+  fov: 75
+  mount: {x: 1.2, y: 0.0, z: 1.5}
+  modalities: [rgb, depth, semantic_segmentation]
+lidar:
+  enabled: false
+  channels: 32
+  range: 60
+  points_per_second: 300000
+  rotation_hz: 20

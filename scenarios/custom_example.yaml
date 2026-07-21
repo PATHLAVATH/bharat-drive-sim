@@ -1,0 +1,11 @@
+name: my_custom_scene
+map: uncontrolled_junction
+ego_speed: 5.0
+environment: {visibility: 0.7, label: dusk}
+actors:
+  - {type: auto, path: cross_a, s: 25, count: 3, spread_s: 15}
+  - {type: cow, path: same, s: 80, lat: 0.0}
+vrus:
+  - {cross_at: 78, side: -1, count: 2, speed: 1.2, trigger: 18, spread: 3}
+hazards:
+  - {type: pothole, along: [0.3, 0.8], count: 6}

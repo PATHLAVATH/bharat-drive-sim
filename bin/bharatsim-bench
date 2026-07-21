@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+"""bharat-drive-sim benchmark CLI.
+
+  python bin/bharatsim-bench --agent riskfield --seeds 5
+  python bin/bharatsim-bench --agent constant  --scenarios cow_on_road,jaywalk_swarm
+  python bin/bharatsim-bench --agent my_module:MyAgent --seeds 3        # bring your own
+  python bin/bharatsim-bench --scenario-file scenarios/custom.yaml --agent riskfield
+"""
+import argparse, importlib, os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from bharatsim.eval.env import run_suite, run_scenario
+from bharatsim.scenarios.builtin import SPECS
+from bharatsim.scenarios.dsl import load_scenario
+
+
+def resolve(agent):
+    if agent == "riskfield":
+        from bharatsim.eval.reference import RiskFieldAgent
+        return RiskFieldAgent
+    if agent == "constant":
+        from bharatsim.eval.reference import ConstantAgent
+        return ConstantAgent
+    mod, cls = agent.split(":")
+    return getattr(importlib.import_module(mod), cls)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--agent", default="riskfield")
+    ap.add_argument("--seeds", type=int, default=5)
+    ap.add_argument("--scenarios", default="all")
+    ap.add_argument("--scenario-file", default=None)
+    ap.add_argument("--budget", type=float, default=None)
+    ap.add_argument("--out", default=None)
+    args = ap.parse_args()
+    factory = resolve(args.agent)
+    if args.scenario_file:
+        import yaml
+        spec = yaml.safe_load(open(args.scenario_file))
+        row = run_scenario(factory(), spec=spec, seed=0)
+        print(row); return
+    names = None if args.scenarios == "all" else args.scenarios.split(",")
+    out = args.out or f"results_{args.agent.split(':')[-1]}.json"
+    run_suite(factory, scenarios=names, seeds=args.seeds, out_json=out,
+              time_budget=args.budget)
+
+
+if __name__ == "__main__":
+    main()

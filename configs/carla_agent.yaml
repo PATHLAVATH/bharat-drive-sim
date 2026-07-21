@@ -1,0 +1,5 @@
+# Which bharatsim Agent the CARLA Leaderboard wrapper should run.
+# Any 'module:Class' subclassing bharatsim.eval.env.Agent.
+agent: "bharatsim.eval.reference:RiskFieldAgent"
+# e.g. your trained model:
+# agent: "mypkg.my_agent:MyLearnedAgent"

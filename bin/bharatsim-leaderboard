@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""Run the generated benchmark and write a leaderboard report.
+
+  python bin/bharatsim-leaderboard --agent expert --n 200
+  python bin/bharatsim-leaderboard --agent my_module:MyAgent --n 200 --budget 300
+"""
+import argparse, importlib, os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from bharatsim.eval.leaderboard import run_leaderboard
+
+
+def resolve(a):
+    if a == "expert":
+        from bharatsim.eval.expert import ExpertAutopilot
+        return ExpertAutopilot
+    if a == "riskfield":
+        from bharatsim.eval.reference import RiskFieldAgent
+        return RiskFieldAgent
+    if a == "constant":
+        from bharatsim.eval.reference import ConstantAgent
+        return ConstantAgent
+    m, c = a.split(":"); return getattr(importlib.import_module(m), c)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--agent", default="expert")
+    ap.add_argument("--n", type=int, default=200)
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--out", default="leaderboard")
+    ap.add_argument("--budget", type=float, default=None)
+    ap.add_argument("--cameras", action="store_true")
+    args = ap.parse_args()
+    run_leaderboard(resolve(args.agent), n=args.n, seed=args.seed,
+                    out_dir=args.out, time_budget=args.budget, cameras=args.cameras)
+
+
+if __name__ == "__main__":
+    main()
