@@ -16,6 +16,9 @@ def resolve(a):
     if a == "riskfield":
         from bharatsim.eval.reference import RiskFieldAgent
         return RiskFieldAgent
+    if a == "riskfield_v2":
+        from bharatsim.eval.reference_v2 import RiskFieldV2
+        return RiskFieldV2
     if a == "constant":
         from bharatsim.eval.reference import ConstantAgent
         return ConstantAgent
